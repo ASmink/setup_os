@@ -80,6 +80,10 @@ if __name__ == "__main__":
                 "depends-on": []
             },
             {
+                "name": "git-flow",
+                "depends-on": []
+            },
+            {
                 "name": "htop",
                 "depends-on": []
             },
