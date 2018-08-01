@@ -1,7 +1,8 @@
 import os
 import apt
 
-class CommandExecuter:
+
+class CommandExecutor:
     def __init__(self):
         pass
 
@@ -10,9 +11,9 @@ class CommandExecuter:
 
         if root:
             execution_string += "sudo "
-        
+
         execution_string += command
-        
+
         try:
             os.system(execution_string)
         except:
@@ -22,17 +23,23 @@ class CommandExecuter:
         print("Updating Repositories and Upgrading Packages . . .")
         self._execute_command(True, f"apt update -y")
         self._execute_command(True, f"apt upgrade -y")
-    
+
     def install_system_package(self, package_name):
         print(f"Installing System Package {package_name}. . .")
         self._execute_command(True, f"apt install {package_name} -y")
 
-    def system_package_installed(self, package_name):
+    def system_packages_installed(self, package_names):
+        if len(package_names) == 0:
+            return True
+
         cache = apt.Cache()
         try:
-            return cache[package_name].is_installed
+            for package_name in package_names:
+                cache[package_name].is_installed
         except:
             return False
+
+        return True
 
     def install_python_package(self, package_name, legacy=False):
         print(f"Installing Python Package {package_name}. . .")
@@ -43,26 +50,58 @@ class CommandExecuter:
 
 
 if __name__ == "__main__":
-    command_executer = CommandExecuter()
-    command_executer.update_system()
+    command_executor = CommandExecutor()
+    command_executor.update_system()
 
-    system_packages = [
-            "python", 
-            "python-pip", 
-            "python3",
-            "python3-pip",
-            "vim",
-            "git",
-            "htop",
-            "awscli",
-            "whois"
-            ]
-    
-    for package in system_packages:
-        command_executer.install_system_package(package)
+    packages = {
+        "system": [
+            {
+                "name": "python",
+                "depends-on": []
+            },
+            {
+                "name": "python-pip",
+                "depends-on": []
+            },
+            {
+                "name": "python3",
+                "depends-on": []
+            },
+            {
+                "name": "python3-pip",
+                "depends-on": []
+            },
+            {
+                "name": "vim",
+                "depends-on": []
+            },
+            {
+                "name": "git",
+                "depends-on": []
+            },
+            {
+                "name": "htop",
+                "depends-on": []
+            },
+            {
+                "name": "awscli",
+                "depends-on": []
+            },
+            {
+                "name": "whois",
+                "depends-on": []
+            },
+        ],
+        "python": [],
+        "node": []
+    }
 
-    if command_executer.system_package_installed("python") and command_executer.system_package_installed("python-pip"):
+    for package in packages.get("system"):
+        if command_executor.system_packages_installed(package.get("depends-on")):
+            command_executor.install_system_package(package.get("name"))
+
+    if command_executor.system_packages_installed(["python", "python-pip"]):
         pass
 
-    if command_executer.system_package_installed("python3") and command_executer.system_package_installed("python3-pip"):
+    if command_executor.system_packages_installed(["python3", "python3-pip"]):
         pass
